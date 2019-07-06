@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculator</title>
+    <style>
+        .calculator {
+            padding: 20px;
+            width: fit-content;
+            border: 3px solid black;
+            background-color: blue;
+            margin: auto;
+        }
+
+        .calculator-body {
+            text-align: center;
+        }
+
+        .symbol {
+            width: 65px;
+            height: 50px;
+            font-size: 25px;
+        }
+
+        #screen {
+            padding-left: 5px;
+            padding-right: 5px;
+            height: 50px;
+            width: 400px;
+            font-size: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div class = "calculator">
+        <div class="calculator-body">
+            <div>
+                <input type="text" id="screen"/>
+            </div> <br>
+            <div>
+                <button class="symbol reset">CE</button>
+                <button class="symbol writable">%</button>
+                <button class="symbol writable">(</button>
+                <button class="symbol writable">)</button>
+            </div> <br>
+            <div>
+                <button class="symbol writable">7</button>
+                <button class="symbol writable">8</button>
+                <button class="symbol writable">9</button>
+                <button class="symbol writable">/</button>
+            </div> <br>
+            <div>
+                <button class="symbol writable">4</button>
+                <button class="symbol writable">5</button>
+                <button class="symbol writable">6</button>
+                <button class="symbol writable">*</button>
+            </div> <br>
+            <div>
+                <button class="symbol writable">1</button>
+                <button class="symbol writable">2</button>
+                <button class="symbol writable">3</button>
+                <button class="symbol writable">-</button>
+            </div> <br>
+            <div>
+                <button class="symbol writable">0</button>
+                <button class="symbol writable">00</button>
+                <button class="symbol send">=</button>
+                <button class="symbol writable">+</button>
+            </div> <br>
+        </div>
+    </div>
+
+    <script>
+        let writables = document.getElementsByClassName("writable");
+        for (let index = 0; index < writables.length; index++) {
+            let writable = writables[index];
+            writable.addEventListener("click", (e) => {
+                document.getElementById("screen").value += e.target.innerText;
+            });
+        }
+
+        let resets = document.getElementsByClassName("reset");
+        for (let index = 0; index < resets.length; index++) {
+            let reset = resets[index];
+            reset.addEventListener("click", () => {
+                document.getElementById("screen").value = "";
+            });
+        }
+
+        let sends = document.getElementsByClassName("send");
+        for (let index = 0; index < sends.length; index++) {
+            let send = sends[index];
+            send.addEventListener("click", () => {
+                let fd = new FormData();
+                fd.append("exp", document.getElementById("screen").value);
+
+                fetch("/calculate", {
+                    method: 'POST',
+                    body: fd
+                })
+                .then(response => response.text())
+                .then(response => document.getElementById("screen").value = response);
+            });
+        }
+
+        document.getElementById("screen").addEventListener("keyup", function(event) {
+            // Number 13 is the "Enter" key on the keyboard
+            if (event.key === "Enter") {
+                sends[0].click();
+            }
+        });
+    </script>
+</body>
+</html>
